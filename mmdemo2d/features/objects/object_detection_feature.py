@@ -7,7 +7,8 @@ from ultralytics import YOLO
 from ultralytics.engine.results import Boxes
 
 from mmdemo2d.base_feature import BaseFeature
-from mmdemo2d.interfaces import ColorImageInterface, DetectedObjectsInterface, DetectedObjectInterface
+from mmdemo2d.interfaces import ColorImageInterface, DetectedObjectsInterface
+from mmdemo2d.interfaces.data import ObjectInterface
 
 @final
 class ObjectiveDetection(BaseFeature):
@@ -28,11 +29,11 @@ class ObjectiveDetection(BaseFeature):
     def get_output(
         self,
         color: ColorImageInterface
-    ):
+    ) -> DetectedObjectsInterface | None:
         if not color.is_new:
             return None
 
-        #copy the color image
+        # copy the color image
         copy = color.frame.copy()
         copy = cv2.cvtColor(copy, cv2.COLOR_RGB2BGR)
 
@@ -44,10 +45,10 @@ class ObjectiveDetection(BaseFeature):
         objects = []
         for i in mapped_result:
             if i[0] in self.used_objects and i[1] >= self.threshold:
-                objects.append(DetectedObjectInterface(name = i[0], position = i[2]))
+                objects.append(ObjectInterface(name = i[0], position = i[2]))
     
         return DetectedObjectsInterface(objects = objects)
-    
+
     @staticmethod
     def map_result(
         boxes: Boxes,
@@ -59,5 +60,5 @@ class ObjectiveDetection(BaseFeature):
             cls = int(boxes.cls[i])
             confidence = float(boxes.conf[i])
             points = boxes.xyxy[i]
-            mapped_result.append((names[cls], confidence, points.type(torch.int32).tolist()))
+            mapped_result.append((names[cls], confidence, points.type(torch.int32).cpu().numpy()))
         return mapped_result

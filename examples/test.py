@@ -3,12 +3,14 @@ from mmdemo2d.demo import Demo
 from mmdemo2d.features import (
     create_input_features,
     DisplayFrame,
-    ObjectiveDetection
+    ObjectiveDetection,
+    Bodypoints
 )
 
 if __name__ == "__main__":
     VIDEO_PATH = f"D:/multimodality/laptop_test.mp4"
-    MODEL_PATH = f"D:/multimodality/yolo11n.pt"
+    OBJ_MODEL_PATH = f"D:/multimodality/yolo11n.pt"
+    BODY_MODEL_PATH = f"D:/multimodality/yolo11n-pose.pt"
     FRAME_RATE = 10
     THRESHOLD = 0.3
     PLAY_BACK = True
@@ -20,14 +22,19 @@ if __name__ == "__main__":
     )
 
     objects = ObjectiveDetection(
-        MODEL_PATH,
+        OBJ_MODEL_PATH,
         THRESHOLD,
+        colorimage
+    )
+
+    participants = Bodypoints(
+        BODY_MODEL_PATH,
         colorimage
     )
 
     demo = Demo(
         targets = [
-            DisplayFrame(colorimage, objects)
+            DisplayFrame(colorimage, objects, participants)
         ]
     )
 

@@ -2,12 +2,12 @@ import random
 from typing import final
 
 import cv2 as cv
-import torch
 
 from mmdemo2d.base_feature import BaseFeature
-from mmdemo2d.interfaces import ColorImageInterface, DetectedObjectsInterface, EmptyInterface
+from mmdemo2d.interfaces import ColorImageInterface, DetectedObjectsInterface, BodyPointsInterface, EmptyInterface
 
 GREEN = (0, 255, 0)
+RED = (0, 0, 255)
 
 @final
 class DisplayFrame(BaseFeature[EmptyInterface]):
@@ -23,9 +23,14 @@ class DisplayFrame(BaseFeature[EmptyInterface]):
     def __init__(
         self,
         color: BaseFeature[ColorImageInterface],
-        objects: BaseFeature[DetectedObjectsInterface]
+        objects: BaseFeature[DetectedObjectsInterface],
+        jointpoints: BaseFeature[BodyPointsInterface]
     ) -> None:
-        super().__init__(color, objects)
+        super().__init__(
+            color,
+            objects,
+            jointpoints
+        )
 
     def initialize(self):
         self.window_name = str(random.random())
@@ -34,7 +39,8 @@ class DisplayFrame(BaseFeature[EmptyInterface]):
     def get_output(
         self,
         color: ColorImageInterface,
-        objects: DetectedObjectsInterface
+        objects: DetectedObjectsInterface,
+        participants: BodyPointsInterface
     ) -> EmptyInterface | None:
         if not color.is_new():
             self.window_should_be_up = False
@@ -52,6 +58,16 @@ class DisplayFrame(BaseFeature[EmptyInterface]):
                 color = GREEN,
                 thickness = 3
             )
+        
+        for i in participants.bodies:
+            for p in range(len(i.points)):
+                cv.circle(
+                    img = frame,
+                    center = i.points[p],
+                    radius = 10,
+                    color = RED,
+                    thickness = 3
+                )
 
         frame = cv.resize(frame, (800, 600))
         cv.imshow(self.window_name, frame)

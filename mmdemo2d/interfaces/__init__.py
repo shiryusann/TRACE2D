@@ -11,6 +11,7 @@ from dataclasses import dataclass, asdict
 import numpy as np
 
 from mmdemo2d.base_interface import BaseInterface
+from mmdemo2d.interfaces.data import ObjectInterface, JointPointInterface
 
 @dataclass
 class EmptyInterface(BaseInterface):
@@ -28,23 +29,21 @@ class ColorImageInterface(BaseInterface):
     frame: np.ndarray
 
 @dataclass
-class DetectedObjectInterface(BaseInterface):
-    """
-    name -- the name of detected object.
-
-    position -- the point of top-left and right-bottom in the original frame.
-    """
-
-    name: str
-    position: np.ndarray
-
-@dataclass
 class DetectedObjectsInterface(BaseInterface):
     """
-    objects -- a list of detected objects in a frame
+    objects -- a list of detected objects in a frame.
     """
 
-    objects: List[DetectedObjectInterface]
+    objects: List[ObjectInterface]
+
+@dataclass
+class BodyPointsInterface(BaseInterface):
+    """
+    objects -- a list of detected participants' joint points in a frame.
+
+    """
+
+    bodies: List[JointPointInterface]
 
 @dataclass
 class TimeInterface(BaseInterface):

@@ -1,3 +1,4 @@
 from mmdemo2d.features.inputs.input_video_feature import create_input_features
 from mmdemo2d.features.outputs.display_frame_feature import DisplayFrame
 from mmdemo2d.features.objects.object_detection_feature import ObjectiveDetection
+from mmdemo2d.features.posture.body_point_feature import Bodypoints
